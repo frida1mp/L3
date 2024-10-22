@@ -1,13 +1,14 @@
 class ProductListing extends HTMLElement {
     constructor() {
-      super()
-  
-      // Attach a shadow DOM tree
-      this.attachShadow({ mode: 'open' })
-      
-      // Define styles for the component
-      const template = document.createElement('template')
-      template.innerHTML = `
+        super()
+
+        // Attach a shadow DOM tree
+        this.attachShadow({ mode: 'open' })
+
+        // Define styles for the component
+        const template = document.createElement('template')
+        template.innerHTML = `
+      <style>
         :host {
           display: block;
         }
@@ -28,38 +29,39 @@ class ProductListing extends HTMLElement {
         .product p {
           margin: 5px 0;
         }
+          </style>
       `
-      
-      this.shadowRoot.appendChild(style)
-  
-      this.container = document.createElement('div')
-      this.shadowRoot.appendChild(this.container)
-  
-      this.loadProducts()
+
+        this.shadowRoot.appendChild(template)
+
+        this.container = document.createElement('div')
+        this.shadowRoot.appendChild(this.container)
+
+        this.loadProducts()
     }
-  
+
     async loadProducts() {
-      try {
-        const response = await fetch('products.json')
-        const cars = await response.json()
-  
-        // Display the products in the container
-        this.displayProducts(cars)
-      } catch (error) {
-        console.error('Failed to load products:', error)
-      }
+        try {
+            const response = await fetch('products.json')
+            const cars = await response.json()
+
+            // Display the products in the container
+            this.displayProducts(cars)
+        } catch (error) {
+            console.error('Failed to load products:', error)
+        }
     }
-  
+
     displayProducts(cars) {
-      // Clear any existing content
-      this.container.innerHTML = ''
-  
-      // Create product elements for each car
-      cars.forEach(car => {
-        const productDiv = document.createElement('div')
-        productDiv.classList.add('product')
-  
-        productDiv.innerHTML = `
+        // Clear any existing content
+        this.container.innerHTML = '<h2>Available cars</h2>'
+
+        // Create product elements for each car
+        cars.forEach(car => {
+            const productDiv = document.createElement('div')
+            productDiv.classList.add('product')
+
+            productDiv.innerHTML = `
           <img src="${car.image}" alt="${car.name}">
           <div>
             <h3>${car.name}</h3>
@@ -67,10 +69,10 @@ class ProductListing extends HTMLElement {
             <p>Price: $${car.price}</p>
           </div>
         `
-        this.container.appendChild(productDiv)
-      })
+            this.container.appendChild(productDiv)
+        })
     }
-  }
-  
-  // Define the custom element
-  customElements.define('product-listing', ProductListing)
+}
+
+// Define the custom element
+customElements.define('product-listing', ProductListing)

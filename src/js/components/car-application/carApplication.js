@@ -52,7 +52,6 @@ template.innerHTML = `
   <button id="createBookingButton" tabindex="0">Create booking</button>
   <div id="bookingForm"></div>
   <button id="createCustomerButton" tabindex="0">Create new customer</button>
-    <h2>Available cars</h2>
   <div id="customerForm"></div>
   `
 customElements.define('car-application',
@@ -104,35 +103,14 @@ customElements.define('car-application',
        * Called when the element is inserted to the DOM.
        */
       connectedCallback() {
-        this.displayProducts()
-
-        this.#createBookingButton.addEventListener('click', handleCreateBookingClick())
+        this.#createBookingButton.addEventListener('click', this.handleCreateBookingClick.bind(this))
       }
 
-    displayProducts() {
-      const products = [
-        { id: 1, name: 'Car A', price: 500 },
-        { id: 2, name: 'Car B', price: 700 },
-        { id: 3, name: 'Car C', price: 900 },
-      ]
 
-      // Clear the product list
-      this.#productList.innerHTML = ''
-
-      // Create and append each product to the list
-      products.forEach(product => {
-        const productDiv = document.createElement('div')
-        productDiv.className = 'product'
-        productDiv.innerHTML = `
-          <h3>${product.name}</h3>
-          <p>Price: $${product.price}</p>
-        `
-        this.#productList.appendChild(productDiv)
-      })
-    }
 
     handleCreateBookingClick() {
-      this.#createBookingButton.style.display = 'block'
+      console.log('test')
+      this.#bookingForm.style.display = 'none'
       this.#productList.style.display = 'none'
     }
   })
