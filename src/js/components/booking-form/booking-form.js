@@ -19,12 +19,33 @@ template.innerHTML = `
     .inputField {
       margin: 2px;
     }
+    .hidden {
+      display: none;
+    }
+    .visible {
+      display: block;
+    }
+    select {
+      margin-top: 10px;
+    }
   </style>
 
-  <div  class="container">
-  <label for="nickname">Nickname:</label>
-  <input type="text" class="nickname">
-  <button id="startButton">Start</button>
+  <div class="container">
+    <!-- Step 1: Input customer details -->
+    <div id="customerDetails">
+      <label for="name">Name:</label>
+      <input type="text" id="name" class="inputField">
+      <label for="email">Email:</label>
+      <input type="email" id="email" class="inputField">
+      <button id="nextButton">Next</button>
+    </div>
+
+    <!-- Step 2: Select product -->
+    <div id="productSelection" class="hidden">
+      <h3>Select a product</h3>
+      <select id="productDropdown"></select>
+      <button id="submitBooking">Submit Booking</button>
+    </div>
   </div>
 `
 
@@ -33,94 +54,87 @@ customElements.define('booking-form',
    * Represents a nickname-form element.
    */
   class extends HTMLElement {
-    /**
-     * The nickname.
-     *
-     * @type {string}
-     */
-    #nickname = 'unknown'
+    #name = ''
+    #email = ''
+    #products = []
+    #selectedProduct = ''
 
-    /**
-     * The button to press after inputting nickname.
-     *
-     * @type {HTMLElement}
-     */
-    #button
+    #nextButton
+    #submitButton
+    #productDropdown
 
-    /**
-     * Creates an instance of the current type.
-     */
-    constructor () {
+    constructor() {
       super()
 
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
-
-      // Get the nickname element in the shadow root.
-      this.#nickname = this.shadowRoot.querySelector('.nickname')
-      this.#button = this.shadowRoot.querySelector('#startButton')
+      this.#nextButton = this.shadowRoot.querySelector('#nextButton')
+      this.#submitButton = this.shadowRoot.querySelector('#submitBooking')
+      this.#productDropdown = this.shadowRoot.querySelector('#productDropdown')
     }
 
-    /**
-     * Handles the "Start" button click event.
-     */
-    buttonClicked () {
-      const enteredNickname = this.#nickname.value
-      if (enteredNickname.trim() !== '') {
-        this.dispatchEvent(new CustomEvent('nicknameEntered', { detail: enteredNickname }))
-        this.setAttribute('nickname', enteredNickname)
-      } else {
-        alert('Please enter nickname')
-      }
-    }
-
-    /**
-     * Attributes to monitor for changes.
-     *
-     * @returns {string[]} A string array of attributes to monitor.
-     */
-    static get observedAttributes () {
-      return ['nickname']
-    }
 
     /**
      * Called after the element is inserted into the DOM.
      */
-    connectedCallback () {
+    connectedCallback() {
       // Add keydown event listener to the input field
-      this.#nickname.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          this.buttonClicked()
-        }
-      })
+      this.#nextButton.addEventListener('click', this.handleNextClick())
+      this.#submitButton.addEventListener('click', () => this.handleSubmitBooking())
 
-      // Add click event listener to the button
-      this.#button.addEventListener('click', (event) => this.buttonClicked())
-      this.#nickname.value = this.getAttribute('nickname') || ''
+      this.fetchProducts()
     }
+    
+    async fetchProducts () {
+      try {
+        const response = await fetch('products.json')
+        this.#products = await response.json()
 
-    /** Called when observed attribute(s) changes.
-     *
-     * @param {string} name - The attribute's name.
-     * @param {*} oldValue - The old value.
-     * @param {*} newValue - The new value.
-     */
-    attributeChangedCallback (name, oldValue, newValue) {
-      console.log(`Attribute ${name} changed from ${oldValue} to ${newValue}`)
-      if (name === 'nickname' && newValue !== oldValue && this.#nickname.value !== newValue) {
-        this.#nickname.value = newValue
+        this.addToProductDropdown()
+
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
       }
     }
 
-    /**
-     * Called after the element has been removed from the DOM.
-     */
-    disconnectedCallback () {
-      this.#button.removeEventListener('click', this.buttonClicked)
-      this.#nickname.removeEventListener('keydown', this.handleKeyDown)
+    addToProductDropdown() {
+      this.#productDropdown.innerHTML = ''
+
+      this.#products.forEach(product => {
+        const option = document.createElement('option')
+        option.value = product.name
+        option.textContent = `${product.name} - $${product.price}`
+        this.#productDropdown.appendChild(option)
+      })
+
+      // Set the initial selected product
+      this.#selectedProduct = this.#productDropdown.value
+      this.#productDropdown.addEventListener('change', () => {
+        this.#selectedProduct = this.#productDropdown.value
+      })
     }
+
+    handleNextClick() {
+      const nameValue = this.shadowRoot.querySelector('#name')
+      const emailValue = this.shadowRoot.querySelector('#email')
+
+      // Validate the fields
+      if (nameValue.value.trim() === '' || emailValue.value.trim() === '') {
+        alert('Please enter both name and email.')
+        return
+      }
+
+      // Store the values
+      this.#name = nameInput.value.trim()
+      this.#email = emailInput.value.trim()
+
+      // Show product selection step
+      this.toggleStepVisibility()
+    }
+
+
   }
 )
 
