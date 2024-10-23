@@ -179,8 +179,9 @@ customElements.define('booking-form',
       }
 
       console.log('booking pushed', booking)
-      const newBooking = await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
-      console.log('booking complete:', newBooking)
+      await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
+
+      alert(`Booking confirmed! \n Thank you for renting your dream car with us. \n \nCar: ${newProduct.name}\nYour email: ${newCustomer.email}`)
     }
 
 
