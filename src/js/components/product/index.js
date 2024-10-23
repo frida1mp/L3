@@ -1,1 +1,1 @@
-import './product-list.js'
+import './productListing.js'

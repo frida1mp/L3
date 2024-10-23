@@ -1,1 +1,1 @@
-import './booking-form.js'
+import './bookingForm.js'

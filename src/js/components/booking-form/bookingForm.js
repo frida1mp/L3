@@ -4,10 +4,7 @@
  * @author Frida Pedersén <fp222ni@student.lnu.se>
  * @version 1.1.0
  */
-import { LocalStorageAdapter } from "../../modules/localStorage"
-import { BookingManager } from "booking-manager-module"
 
-// Define template.
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -32,6 +29,9 @@ template.innerHTML = `
     select {
       margin-top: 10px;
     }
+      #productDropdown {
+      background-color: white;
+      }
   </style>
 
   <div class="container">
@@ -75,11 +75,7 @@ customElements.define('booking-form',
     constructor() {
       super()
 
-
-      this.localStorage = new LocalStorageAdapter()
-      this.bookingManager = new BookingManager(this.localStorage)
-
-      console.log('test:', this.bookingManager.customers)
+      this.bookingManager = null
 
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
@@ -100,33 +96,40 @@ customElements.define('booking-form',
     connectedCallback() {
       this.#nextButton.addEventListener('click', this.handleNextClick.bind(this))
       this.#doneButton.addEventListener('click', () => this.handleRequestBooking())
-
-      this.fetchProducts()
     }
 
-    async fetchProducts() {
-      try {
-        const response = await fetch('products.json')
-        this.fetchedProducts = await response.json()
-
-        for (const product of this.fetchedProducts) {
-          const newProduct = await this.bookingManager.addProduct(product)
-          this.#products.push(newProduct)
-        }
-        console.log('all prods', this.#products)
-        this.addToProductDropdown()
-
-      } catch (error) {
-        console.error('Failed to fetch products:', error)
-      }
+    setProducts(products) {
+      this.#products = products
     }
+    // setBookingManager(manager) {
+    //   this.bookingManager = manager
+    //   // this.fetchProducts()
+
+    // }
+
+    // async fetchProducts() {
+    //   try {
+    //     const response = await fetch('products.json')
+    //     this.fetchedProducts = await response.json()
+
+    //     for (const product of this.fetchedProducts) {
+    //       const newProduct = await this.bookingManager.addProduct(product)
+    //       this.#products.push(newProduct)
+    //     }
+    //     console.log('all prods', this.#products)
+    //     this.addToProductDropdown()
+
+    //   } catch (error) {
+    //     console.error('Failed to fetch products:', error)
+    //   }
+    // }
 
     addToProductDropdown() {
       console.log('inside dropdown')
       this.#productDropdown.innerHTML = ''
-
+      console.log('testing12:', this.#products)
       this.#products.forEach(product => {
-        console.log('product1', product)
+        console.log('product1324', product)
         const option = document.createElement('option')
         option.value = product.id
         console.log('option value:', option.value)
@@ -142,6 +145,7 @@ customElements.define('booking-form',
     }
 
     handleNextClick() {
+      this.addToProductDropdown()
       this.#dateInput.style.display = 'block'
       const nameValue = this.shadowRoot.querySelector('#name')
       const emailValue = this.shadowRoot.querySelector('#email')
@@ -177,11 +181,6 @@ customElements.define('booking-form',
           alert('Please select a booking date.')
           return
         }
-        this.#selectedDate = new Date().toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric'
-        })
-        
 
         console.log('inside submit book')
         const customer = {
@@ -189,36 +188,27 @@ customElements.define('booking-form',
           email: this.#email
         }
 
-        const newCustomer = await this.bookingManager.addCustomer(customer)
-        console.log('newccustomer', newCustomer)
+        const selectedProduct = await this.#products.find(product => product.id === this.#selectedProduct)
 
-        const newProduct = await this.#products.find(product => product.id === this.#selectedProduct)
-        console.log('newProduct found:', newProduct)
+        const selectedDate = new Date()
 
-        const booking = {
-          productId: newProduct.id,
-          customerId: newCustomer.id,
-          date: this.#selectedDate
-        }
 
-        console.log('booking pushed', booking)
-        const newBooking = await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
+        const bookingRequestEvent = new CustomEvent('bookingRequestAdded', {
+          detail: { customer, selectedProduct, selectedDate },
+          bubbles: true, // Allow event to bubble up through the DOM
+          composed: true // Allow event to cross the shadow DOM boundary
+        });
 
-        if (typeof newBooking === 'object' && newBooking !== null) {
-          const bookingEvent = new CustomEvent('bookingAdded', {
-            detail: { newBooking },
-            bubbles: true, // Allow event to bubble up through the DOM
-            composed: true // Allow event to cross the shadow DOM boundary
-          });
+        this.dispatchEvent(bookingRequestEvent);
 
-          this.dispatchEvent(bookingEvent);
-        }
       } catch (error) {
-        console.error('Failed to create booking:', newBooking)
+        console.error('Failed to create booking:', error.message)
       }
     }
-    async viewBookingById() {
-      const booking = await this.bookingManager.getBookingById('"cust-m2lszevp-6m2vl5"')
+    async viewBookingById(email) {
+      const bookings = this.bookingManager.getAllBookings()
+      const bookingWithEmail = bookings.find(booking => booking.customer.email === email)
+      const booking = bookingWithEmail
       console.log('fetched?', booking)
     }
 
