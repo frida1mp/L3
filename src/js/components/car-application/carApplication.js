@@ -178,18 +178,19 @@ customElements.define('car-application',
       const productId = selectedProduct.id
 
       const bookingData = {customerId, productId, selectedDate}
-      console.log('test', bookingData)
-      this.saveBooking(bookingData)
 
+      const newBooking = await this.saveBooking(bookingData)
+      console.log('booko', newBooking)
 
       // Perform any additional actions you want here, e.g., showing a message
-      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${productName}\nDate booked: ${date}\nYour email: ${customerEmail}`);
+      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`);
       this.#bookingForm.style.display = 'none'
       this.#productList.style.display = 'block'
     }
 
     async saveBooking(bookingData) {
-      const newBooking = await this.#bookingManager.addBooking(bookingData.customerId, bookingData.productId, bookingData.selectedDate)
+      console.log('all', bookingData.productId)
+      const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
       return newBooking
     }
 
