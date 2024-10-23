@@ -97,8 +97,13 @@ customElements.define('booking-form',
     async fetchProducts () {
       try {
         const response = await fetch('products.json')
-        this.#products = await response.json()
+        this.fetchedProducts = await response.json()
 
+        for (const product of this.fetchedProducts) {
+          const newProduct = await this.bookingManager.addProduct(product)
+          this.#products.push(newProduct)
+        }
+        console.log('all prods', this.#products)
         this.addToProductDropdown()
 
       } catch (error) {
@@ -107,11 +112,14 @@ customElements.define('booking-form',
     }
 
     addToProductDropdown() {
+      console.log('inside dropdown')
       this.#productDropdown.innerHTML = ''
 
       this.#products.forEach(product => {
+        console.log('product1', product)
         const option = document.createElement('option')
-        option.value = product.name
+        option.value = product.id
+        console.log('option value:', option.value)
         option.textContent = `${product.name} - $${product.price}`
         this.#productDropdown.appendChild(option)
       })
@@ -161,14 +169,18 @@ customElements.define('booking-form',
       const newCustomer = await this.bookingManager.addCustomer(customer)
       console.log('newccustomer', newCustomer)
 
+      const newProduct = await this.#products.find(product => product.id === this.#selectedProduct)
+      console.log('newProduct found:', newProduct)
+
       const booking = {
-        product: this.#selectedProduct,
-        customer: newCustomer,
+        productId: newProduct.id,
+        customerId: newCustomer.id,
         date: new Date()
       }
 
       console.log('booking pushed', booking)
-      this.bookingManager.addBooking(booking.product, booking.customer, booking.date)
+      const newBooking = await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
+      console.log('booking complete:', newBooking)
     }
 
 
