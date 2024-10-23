@@ -48,6 +48,9 @@ template.innerHTML = `
       <select id="productDropdown"></select>
       <button id="doneButton">Done</button>
     </div>
+
+    <!-- Picker for selecting booking date -->
+      <input type="date" id="bookingDate" class="inputField">
   </div>
 `
 
@@ -60,10 +63,12 @@ customElements.define('booking-form',
     #email = ''
     #products = []
     #selectedProduct = ''
+    #selectedDate = ''
 
     #nextButton
     #doneButton
     #productDropdown
+    #dateInput
 
     constructor() {
       super()
@@ -81,6 +86,9 @@ customElements.define('booking-form',
       this.#nextButton = this.shadowRoot.querySelector('#nextButton')
       this.#doneButton = this.shadowRoot.querySelector('#doneButton')
       this.#productDropdown = this.shadowRoot.querySelector('#productDropdown')
+      this.#dateInput = this.shadowRoot.querySelector('#bookingDate')
+
+      this.#dateInput.style.display = 'none'
     }
 
 
@@ -132,7 +140,7 @@ customElements.define('booking-form',
     }
 
     handleNextClick() {
-      console.log('test2 nex')
+      this.#dateInput.style.display = 'block'
       const nameValue = this.shadowRoot.querySelector('#name')
       const emailValue = this.shadowRoot.querySelector('#email')
 
@@ -161,6 +169,18 @@ customElements.define('booking-form',
 
     async handleRequestBooking() {
       try {
+
+        const selectedDateValue = this.#dateInput.value
+        if (!selectedDateValue) {
+          alert('Please select a booking date.')
+          return
+        }
+        this.#selectedDate = new Date().toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric'
+        })
+        
+
         console.log('inside submit book')
         const customer = {
           name: this.#name,
@@ -176,7 +196,7 @@ customElements.define('booking-form',
         const booking = {
           productId: newProduct.id,
           customerId: newCustomer.id,
-          date: new Date()
+          date: this.#selectedDate
         }
 
         console.log('booking pushed', booking)

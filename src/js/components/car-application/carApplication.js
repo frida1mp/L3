@@ -53,7 +53,6 @@ template.innerHTML = `
   <div id="bookingForm"></div>
   <button id="createCustomerButton" tabindex="0">Create new customer</button>
   <div id="customerForm"></div>
-  <button id="completeBookingButton" tabindex="0">Complete Booking</button>
 
   `
 customElements.define('car-application',
@@ -66,7 +65,6 @@ customElements.define('car-application',
     #productList
     #createBookingButton
     #createCustomerButton
-    #completeBooking
 
     /**
      * Creates an instance of the current type.
@@ -88,9 +86,6 @@ customElements.define('car-application',
       this.#createBookingButton = this.shadowRoot.querySelector('#createBookingButton')
 
       this.#createCustomerButton = this.shadowRoot.querySelector('#createCustomerButton')
-
-      this.#completeBooking = this.shadowRoot.querySelector('#completeBookingButton')
-      this.#completeBooking.style.display = 'none'
 
       const bookingForm = document.createElement('booking-form')
       this.shadowRoot.appendChild(bookingForm)
@@ -118,7 +113,6 @@ customElements.define('car-application',
     handleCreateBookingClick() {
       this.#createBookingButton.style.display = 'none'
       this.#createCustomerButton.style.display = 'none'
-      this.#completeBooking.style.display = 'block'
         this.#bookingForm.style.display = 'block'
       this.#productList.style.display = 'none'
     }
@@ -129,8 +123,11 @@ customElements.define('car-application',
 
       const productName = booking.newBooking.product.name
       const customerEmail = booking.newBooking.customer.email
+      const date = booking.newBooking.date
 
       // Perform any additional actions you want here, e.g., showing a message
-      alert(`Booking request accepted!\nYour car: ${productName}\nYour email: ${customerEmail}`);
+      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${productName}\nDate booked: ${date}\nYour email: ${customerEmail}`);
+      this.#bookingForm.style.display = 'none'
+      this.#productList.style.display = 'block'
     }
   })
