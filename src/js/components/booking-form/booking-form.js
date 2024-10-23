@@ -4,6 +4,8 @@
  * @author Frida Pedersén <fp222ni@student.lnu.se>
  * @version 1.1.0
  */
+import {LocalStorageAdapter} from "../../modules/localStorage"
+import { BookingManager } from "booking-manager-module"
 
 // Define template.
 const template = document.createElement('template')
@@ -66,6 +68,12 @@ customElements.define('booking-form',
     constructor() {
       super()
 
+
+      this.localStorage = new LocalStorageAdapter()
+      this.bookingManager = new BookingManager(this.localStorage)
+
+      console.log('test:', this.bookingManager.customers)
+
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
       this.attachShadow({ mode: 'open' })
@@ -80,8 +88,7 @@ customElements.define('booking-form',
      * Called after the element is inserted into the DOM.
      */
     connectedCallback() {
-      // Add keydown event listener to the input field
-      this.#nextButton.addEventListener('click', this.handleNextClick())
+      this.#nextButton.addEventListener('click', this.handleNextClick.bind(this))
       this.#submitButton.addEventListener('click', () => this.handleSubmitBooking())
 
       this.fetchProducts()
@@ -117,6 +124,7 @@ customElements.define('booking-form',
     }
 
     handleNextClick() {
+      console.log('test2 nex')
       const nameValue = this.shadowRoot.querySelector('#name')
       const emailValue = this.shadowRoot.querySelector('#email')
 
@@ -127,11 +135,40 @@ customElements.define('booking-form',
       }
 
       // Store the values
-      this.#name = nameInput.value.trim()
-      this.#email = emailInput.value.trim()
+      this.#name = nameValue.value.trim()
+      this.#email = emailValue.value.trim()
 
+      console.log('input:', this.#name, this.#email)
       // Show product selection step
       this.toggleStepVisibility()
+    }
+
+    toggleStepVisibility() {
+      const customerData = this.shadowRoot.querySelector('#customerDetails')
+      const productSelection = this.shadowRoot.querySelector('#productSelection')
+
+      customerData.classList.toggle('hidden')
+      productSelection.classList.toggle('hidden')
+    }
+
+    async handleSubmitBooking() {
+      console.log('inside submit book')
+      const customer = {
+        name: this.#name,
+        email: this.#email
+      }
+
+      const newCustomer = await this.bookingManager.addCustomer(customer)
+      console.log('newccustomer', newCustomer)
+
+      const booking = {
+        product: this.#selectedProduct,
+        customer: newCustomer,
+        date: new Date()
+      }
+
+      console.log('booking pushed', booking)
+      this.bookingManager.addBooking(booking.product, booking.customer, booking.date)
     }
 
 

@@ -107,7 +107,6 @@ customElements.define('car-application',
       }
 
 
-
     handleCreateBookingClick() {
       console.log('test')
       this.#bookingForm.style.display = 'block'

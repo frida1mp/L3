@@ -11,7 +11,7 @@
         "lint:fix": "npx eslint ./src --fix || exit 0"
     },
     "dependencies": {
-        "booking-manager-module": "^1.1.1",
+        "booking-manager-module": "^1.2.1",
         "standard": "^17.1.2",
         "vite": "^5.4.9"
     },
