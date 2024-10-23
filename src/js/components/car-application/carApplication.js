@@ -53,6 +53,8 @@ template.innerHTML = `
   <div id="bookingForm"></div>
   <button id="createCustomerButton" tabindex="0">Create new customer</button>
   <div id="customerForm"></div>
+  <button id="completeBookingButton" tabindex="0">Complete Booking</button>
+
   `
 customElements.define('car-application',
   /**
@@ -64,6 +66,7 @@ customElements.define('car-application',
     #productList
     #createBookingButton
     #createCustomerButton
+    #completeBooking
 
     /**
      * Creates an instance of the current type.
@@ -86,12 +89,17 @@ customElements.define('car-application',
 
       this.#createCustomerButton = this.shadowRoot.querySelector('#createCustomerButton')
 
+      this.#completeBooking = this.shadowRoot.querySelector('#completeBookingButton')
+      this.#completeBooking.style.display = 'none'
+
       const bookingForm = document.createElement('booking-form')
       this.shadowRoot.appendChild(bookingForm)
 
       this.#bookingForm = bookingForm
 
       this.#bookingForm.style.display = 'none'
+      this.#bookingForm.addEventListener('bookingAdded', this.handleBookingAdded.bind(this));
+
 
       const customerForm = document.createElement('customer-form')
       this.shadowRoot.appendChild(customerForm)
@@ -99,17 +107,30 @@ customElements.define('car-application',
       this.#customerForm = customerForm
     }
 
-      /**
-       * Called when the element is inserted to the DOM.
-       */
-      connectedCallback() {
-        this.#createBookingButton.addEventListener('click', this.handleCreateBookingClick.bind(this))
-      }
+    /**
+     * Called when the element is inserted to the DOM.
+     */
+    connectedCallback() {
+      this.#createBookingButton.addEventListener('click', this.handleCreateBookingClick.bind(this))
+    }
 
 
     handleCreateBookingClick() {
-      console.log('test')
-      this.#bookingForm.style.display = 'block'
+      this.#createBookingButton.style.display = 'none'
+      this.#createCustomerButton.style.display = 'none'
+      this.#completeBooking.style.display = 'block'
+        this.#bookingForm.style.display = 'block'
       this.#productList.style.display = 'none'
+    }
+
+    handleBookingAdded(event) {
+      const booking = event.detail;
+      console.log('Booking added:', booking);
+
+      const productName = booking.newBooking.product.name
+      const customerEmail = booking.newBooking.customer.email
+
+      // Perform any additional actions you want here, e.g., showing a message
+      alert(`Booking request accepted!\nYour car: ${productName}\nYour email: ${customerEmail}`);
     }
   })

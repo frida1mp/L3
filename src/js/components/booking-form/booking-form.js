@@ -4,7 +4,7 @@
  * @author Frida Pedersén <fp222ni@student.lnu.se>
  * @version 1.1.0
  */
-import {LocalStorageAdapter} from "../../modules/localStorage"
+import { LocalStorageAdapter } from "../../modules/localStorage"
 import { BookingManager } from "booking-manager-module"
 
 // Define template.
@@ -46,7 +46,7 @@ template.innerHTML = `
     <div id="productSelection" class="hidden">
       <h3>Select a product</h3>
       <select id="productDropdown"></select>
-      <button id="submitBooking">Submit Booking</button>
+      <button id="doneButton">Done</button>
     </div>
   </div>
 `
@@ -62,7 +62,7 @@ customElements.define('booking-form',
     #selectedProduct = ''
 
     #nextButton
-    #submitButton
+    #doneButton
     #productDropdown
 
     constructor() {
@@ -79,7 +79,7 @@ customElements.define('booking-form',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
       this.#nextButton = this.shadowRoot.querySelector('#nextButton')
-      this.#submitButton = this.shadowRoot.querySelector('#submitBooking')
+      this.#doneButton = this.shadowRoot.querySelector('#doneButton')
       this.#productDropdown = this.shadowRoot.querySelector('#productDropdown')
     }
 
@@ -89,12 +89,12 @@ customElements.define('booking-form',
      */
     connectedCallback() {
       this.#nextButton.addEventListener('click', this.handleNextClick.bind(this))
-      this.#submitButton.addEventListener('click', () => this.handleSubmitBooking())
+      this.#doneButton.addEventListener('click', () => this.handleRequestBooking())
 
       this.fetchProducts()
     }
-    
-    async fetchProducts () {
+
+    async fetchProducts() {
       try {
         const response = await fetch('products.json')
         this.fetchedProducts = await response.json()
@@ -159,29 +159,43 @@ customElements.define('booking-form',
       productSelection.classList.toggle('hidden')
     }
 
-    async handleSubmitBooking() {
-      console.log('inside submit book')
-      const customer = {
-        name: this.#name,
-        email: this.#email
+    async handleRequestBooking() {
+      try {
+        console.log('inside submit book')
+        const customer = {
+          name: this.#name,
+          email: this.#email
+        }
+
+        const newCustomer = await this.bookingManager.addCustomer(customer)
+        console.log('newccustomer', newCustomer)
+
+        const newProduct = await this.#products.find(product => product.id === this.#selectedProduct)
+        console.log('newProduct found:', newProduct)
+
+        const booking = {
+          productId: newProduct.id,
+          customerId: newCustomer.id,
+          date: new Date()
+        }
+
+        console.log('booking pushed', booking)
+        const newBooking = await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
+
+        if (typeof newBooking === 'object' && newBooking !== null) {
+          const bookingEvent = new CustomEvent('bookingAdded', {
+            detail: { newBooking },
+            bubbles: true, // Allow event to bubble up through the DOM
+            composed: true // Allow event to cross the shadow DOM boundary
+          });
+
+          this.dispatchEvent(bookingEvent);
+        }
+      } catch (error) {
+        console.error('Failed to create booking:', newBooking)
       }
 
-      const newCustomer = await this.bookingManager.addCustomer(customer)
-      console.log('newccustomer', newCustomer)
 
-      const newProduct = await this.#products.find(product => product.id === this.#selectedProduct)
-      console.log('newProduct found:', newProduct)
-
-      const booking = {
-        productId: newProduct.id,
-        customerId: newCustomer.id,
-        date: new Date()
-      }
-
-      console.log('booking pushed', booking)
-      await this.bookingManager.addBooking(booking.productId, booking.customerId, booking.date)
-
-      alert(`Booking confirmed! \n Thank you for renting your dream car with us. \n \nCar: ${newProduct.name}\nYour email: ${newCustomer.email}`)
     }
 
 
