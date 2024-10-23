@@ -11,6 +11,7 @@ import { BookingManager } from "booking-manager-module"
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+  
     .container {
       font-size: 1.2em;
       color:black;
@@ -20,6 +21,7 @@ template.innerHTML = `
     }
     .inputField {
       margin: 2px;
+      color: black;
     }
     .hidden {
       display: none;
@@ -214,8 +216,10 @@ customElements.define('booking-form',
       } catch (error) {
         console.error('Failed to create booking:', newBooking)
       }
-
-
+    }
+    async viewBookingById() {
+      const booking = await this.bookingManager.getBookingById('"cust-m2lszevp-6m2vl5"')
+      console.log('fetched?', booking)
     }
 
 

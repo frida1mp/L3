@@ -35,6 +35,9 @@ template.innerHTML = `
     
     #createBookingButton {
       margin: 20px 0;
+      background-color: white;
+      font-weight: bold;
+      border-radius: 6px;
     }
 
      #customerForm {
@@ -45,6 +48,9 @@ template.innerHTML = `
 
      #createCustomerButton {
       margin: 20px 0;
+      background-color: white;
+      font-weight: bold;
+      border-radius: 6px;
     }
 
   </style>
@@ -53,6 +59,7 @@ template.innerHTML = `
   <div id="bookingForm"></div>
   <button id="createCustomerButton" tabindex="0">Create new customer</button>
   <div id="customerForm"></div>
+  <div id="productList"></div>
 
   `
 customElements.define('car-application',
@@ -130,4 +137,6 @@ customElements.define('car-application',
       this.#bookingForm.style.display = 'none'
       this.#productList.style.display = 'block'
     }
-  })
+
+    
+   })
