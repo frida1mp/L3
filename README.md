@@ -5,6 +5,9 @@ The Car Application is our web application that provides the user with all our c
 
 As it is currently during development and has no percistent data apart from localStorage we will list all the goals and requirements for the finished product see issues. 
 
+### Design
+![uml](./images/UML-klass.png)
+
 ### To contribute to the project
 - Fork the repository
 - Create a feature branch
