@@ -18,7 +18,7 @@ export class App {
 
         this.carApp.initializeBookingManager(this.#bookingManager)
 
-        this.fetchProducts()
+        this.#fetchProducts()
 
         const carAppRoot = this.carApp.shadowRoot
         this.bookingForm = carAppRoot.querySelector('booking-form')
@@ -26,12 +26,12 @@ export class App {
         console.log('car and boking', this.bookingForm)
 
 
-        this.bookingForm.addEventListener('bookingRequestAdded', this.handleBookingAdded.bind(this))
+        this.bookingForm.addEventListener('bookingRequestAdded', this.#handleBookingAdded.bind(this))
 
     }
 
 
-    async fetchProducts() {
+    async #fetchProducts() {
         try {
             const response = await fetch('products.json')
             this.fetchedProducts = await response.json()
@@ -45,41 +45,60 @@ export class App {
             this.carApp.renderProducts(this.#products)
 
         } catch (error) {
-            console.error('Failed to fetch products:', error)
+            this.#handleError(error, 'Error when fetching products')
         }
     }
 
-    async handleBookingAdded(event) {
-        console.log('inside handle Booking added', event.detail)
-    const { customer, selectedProduct, selectedDate } = event.detail;
+    async #handleBookingAdded(event) {
+        try {
+            console.log('inside handle Booking added', event.detail)
+            const { customer, selectedProduct, selectedDate } = event.detail;
 
-      const newCustomer = await this.#saveCustomer(customer)
+            const newCustomer = await this.#saveCustomer(customer)
 
-      const newBooking = await this.#saveBooking({
-        customerId: newCustomer.id,
-        productId: selectedProduct.id,
-        selectedDate
-      })
+            const newBooking = await this.#saveBooking({
+                customerId: newCustomer.id,
+                productId: selectedProduct.id,
+                selectedDate
+            })
 
-      this.#bookings.push(newBooking)
-      this.carApp.handleBookingSaved(newBooking)
+            this.#bookings.push(newBooking)
+            this.carApp.handleBookingSaved(newBooking)
 
-      // Perform any additional actions you want here, e.g., showing a message
-      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+            // Perform any additional actions you want here, e.g., showing a message
+            alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+        } catch (error) {
+            this.#handleError(error, 'Error when adding booking')
+        }
 
-      
-      
+
+
     }
 
     async #saveBooking(bookingData) {
-      console.log('all', bookingData.productId)
-      const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
-      return newBooking
+        try {
+            console.log('all', bookingData.productId)
+            const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
+            return newBooking
+        } catch (error) {
+            this.#handleError(error, 'Error when saving booking')
+            return {}
+        }
     }
 
     async #saveCustomer(customer) {
-      const newCustomer = await this.#bookingManager.addCustomer(customer)
-      return newCustomer
+        try {
+            const newCustomer = await this.#bookingManager.addCustomer(customer)
+            return newCustomer
+        } catch (error) {
+            this.#handleError(error, 'Error when saving booking')
+            return {}
+        }
+    }
+
+    #handleError(error, customMessage) {
+        console.error(`${customMessage}: ${error.message}`);
+        throw new Error(error, customMessage);
     }
 
 

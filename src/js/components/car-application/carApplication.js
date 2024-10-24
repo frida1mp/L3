@@ -101,6 +101,10 @@ customElements.define('car-application',
 
     }
 
+    initializeBookingManager(bookingManager) {
+      this.#bookingManager = bookingManager
+    }
+
     #setupEventListeners() {
       this.#createBookingButton.addEventListener('click', this.#showBookingForm.bind(this))
       this.#viewBookingButton.addEventListener('click', this.#showBookingListing.bind(this))
@@ -114,10 +118,7 @@ customElements.define('car-application',
       this.#toggleVisibility(this.#viewBookingButton, false)
     }
 
-    initializeBookingManager(bookingManager) {
-      this.#bookingManager = bookingManager
-    }
-
+   
     #attachTemplate() {
       this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
     }
@@ -126,9 +127,9 @@ customElements.define('car-application',
       this.#createBookingButton = this.shadowRoot.querySelector('#createBookingButton')
       this.#viewBookingButton = this.shadowRoot.querySelector('#viewBookingButton')
 
-      this.#productList = this.#createElement('product-listing')
+      this.#productList = this.#createElement('product-list')
       this.#bookingForm = this.#createBookingForm()
-      this.#bookingListing = this.#createElement('booking-listing')
+      this.#bookingListing = this.#createElement('booking-list')
 
       this.#hideElements([this.#bookingForm, this.#bookingListing])
     }
@@ -180,38 +181,8 @@ customElements.define('car-application',
     }
 
     handleBookingSaved(booking) {
-      console.log('car-app, handleBookingSaved')
       this.#showElements([this.#viewBookingButton, this.#createBookingButton, this.#productList])
       this.#hideElements([this.#bookingForm])
       this.#bookings.push(booking)
     }
-    //   const { customer, selectedProduct, selectedDate } = event.detail;
-
-    //   const newCustomer = await this.#saveCustomer(customer)
-
-    //   const newBooking = await this.#saveBooking({
-    //     customerId: newCustomer.id,
-    //     productId: selectedProduct.id,
-    //     selectedDate
-    //   })
-
-    //   this.#bookings.push(newBooking)
-
-    //   // Perform any additional actions you want here, e.g., showing a message
-    //   alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
-    //   this.#showElements([this.#viewBookingButton, this.#createBookingButton, this.#productList])
-    //   this.#hideElements([this.#bookingForm])
-    // }
-
-    // async #saveBooking(bookingData) {
-    //   console.log('all', bookingData.productId)
-    //   const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
-    //   return newBooking
-    // }
-
-    // async #saveCustomer(customer) {
-    //   const newCustomer = await this.#bookingManager.addCustomer(customer)
-    //   return newCustomer
-    // }
-
   })

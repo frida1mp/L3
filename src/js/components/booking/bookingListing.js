@@ -44,7 +44,7 @@ template.innerHTML = `
     </div>
 `
 
-customElements.define('booking-listing',
+customElements.define('booking-list',
 
   class extends HTMLElement {
     #email = ''

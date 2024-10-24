@@ -1,4 +1,4 @@
-class ProductListing extends HTMLElement {
+class ProductList extends HTMLElement {
   constructor() {
     super()
 
@@ -77,4 +77,4 @@ class ProductListing extends HTMLElement {
   }
 }
 
-customElements.define('product-listing', ProductListing)
+customElements.define('product-list', ProductList)
