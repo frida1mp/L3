@@ -183,6 +183,7 @@ customElements.define('car-application',
       console.log('car-app, handleBookingSaved')
       this.#showElements([this.#viewBookingButton, this.#createBookingButton, this.#productList])
       this.#hideElements([this.#bookingForm])
+      this.#bookings.push(booking)
     }
     //   const { customer, selectedProduct, selectedDate } = event.detail;
 
