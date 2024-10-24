@@ -54,10 +54,11 @@ customElements.define('booking-list',
 
     constructor() {
       super()
-      
+
       this.#attachTemplate()
       this.#initializeElements()
     }
+
     connectedCallback() {
       this.#findBookingsButton.addEventListener('click', this.#handleInputData.bind(this))
     }
@@ -104,6 +105,7 @@ customElements.define('booking-list',
 
       if (emailValue.value.trim() === '') {
         alert('Please enter your email.')
+
         return
       }
 
@@ -128,5 +130,4 @@ customElements.define('booking-list',
         this.container.appendChild(bookingDiv)
       })
     }
-
   })

@@ -9,7 +9,6 @@ import '../booking-form/index.js'
 import '../product/index.js'
 import '../booking/bookingListing.js'
 
-// Define template.
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -86,19 +85,16 @@ customElements.define('car-application',
     #bookingManager
     #bookingListing
 
-
     constructor() {
       super()
       this.#attachTemplate()
       this.#initializeElements()
-
 
       this.#bookingForm.setProducts(this.#products)
     }
 
     connectedCallback() {
       this.#setupEventListeners()
-
     }
 
     initializeBookingManager(bookingManager) {
@@ -117,7 +113,6 @@ customElements.define('car-application',
       this.#toggleVisibility(this.#viewBookingButton, false)
     }
 
-   
     #attachTemplate() {
       this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
     }
@@ -136,6 +131,7 @@ customElements.define('car-application',
     #createElement(tag) {
       const element = document.createElement(tag)
       this.shadowRoot.appendChild(element)
+
       return element
     }
 
@@ -156,6 +152,7 @@ customElements.define('car-application',
     #createBookingForm() {
       const bookingForm = this.#createElement('booking-form')
       bookingForm.setProducts(this.#products)
+
       return bookingForm
     }
 
@@ -163,7 +160,6 @@ customElements.define('car-application',
       element.style.display = shouldShow ? 'block' : 'none'
     }
 
-    // Gets products from app
     async renderProducts(products) {
       try {
         for (const product of products) {

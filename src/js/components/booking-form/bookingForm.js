@@ -81,7 +81,6 @@ customElements.define('booking-form',
       this.bookingManager = null
       this.#attachTemplate()
       this.#initializeElements()
-      
     }
 
     connectedCallback() {
@@ -131,7 +130,6 @@ customElements.define('booking-form',
         this.#productDropdown.appendChild(option)
       })
       this.#selectedProduct = this.#productDropdown.value
-      
     }
 
     #handleNextClick() {
@@ -141,6 +139,7 @@ customElements.define('booking-form',
 
       if (nameValue.value.trim() === '' || emailValue.value.trim() === '') {
         alert('Please enter both name and email.')
+
         return
       }
 
@@ -149,7 +148,6 @@ customElements.define('booking-form',
 
       this.#toggleStepVisibility()
       this.#showElements([this.#dateInput])
-
     }
 
     #toggleStepVisibility() {
@@ -162,10 +160,10 @@ customElements.define('booking-form',
 
     async #handleRequestBooking() {
       try {
-
         const selectedDateValue = this.#dateInput.value
         if (!selectedDateValue) {
           alert('Please select a booking date.')
+
           return
         }
 
@@ -178,26 +176,22 @@ customElements.define('booking-form',
 
         const selectedDate = new Date()
 
-
         const bookingRequestEvent = new CustomEvent('bookingRequestAdded', {
           detail: { customer, selectedProduct, selectedDate },
           bubbles: true,
-          composed: true 
-        });
+          composed: true
+        })
 
-        this.dispatchEvent(bookingRequestEvent);
-
+        this.dispatchEvent(bookingRequestEvent)
       } catch (error) {
         console.error('Failed to create booking:', error.message)
       }
     }
+
     async #viewBookingById(email) {
       const bookings = this.bookingManager.getAllBookings()
       const bookingWithEmail = bookings.find(booking => booking.customer.email === email)
       const booking = bookingWithEmail
     }
-
-
   }
 )
-
