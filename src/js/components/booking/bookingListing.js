@@ -53,20 +53,23 @@ customElements.define('booking-listing',
     #allBookings = []
     constructor() {
       super()
-
-      // Attach a shadow DOM tree to this element and
-      // append the template to the shadow root.
-      this.attachShadow({ mode: 'open' })
-        .appendChild(template.content.cloneNode(true))
-
-      this.container = document.createElement('div')
-      this.shadowRoot.appendChild(this.container)
-      this.#findBookingsButton = this.shadowRoot.querySelector('#findBookingsButton')
-
-
+      
+      this.#attachTemplate()
+      this.#initializeElements()
     }
     connectedCallback() {
       this.#findBookingsButton.addEventListener('click', this.handleInputData.bind(this))
+    }
+
+    #attachTemplate() {
+      this.attachShadow({ mode: 'open' })
+        .appendChild(template.content.cloneNode(true))
+    }
+
+    #initializeElements() {
+      this.container = document.createElement('div')
+      this.shadowRoot.appendChild(this.container)
+      this.#findBookingsButton = this.shadowRoot.querySelector('#findBookingsButton')
     }
 
     initialize(bookings) {
@@ -75,24 +78,18 @@ customElements.define('booking-listing',
 
     async loadBookings() {
       try {
-        console.log('inside loadBookings', this.#allBookings)
         for (const booking of this.#allBookings) {
           if (booking.customer.email === this.#email) {
-            console.log('your email', this.#email)
-            console.log('adding booking to your booking', booking)
             this.#bookingsCollection.push(booking)
           }
-          console.log('returning collection', this.#bookingsCollection)
         }
         this.displayBookings()
-        // Display the products in the container
       } catch (error) {
         console.error('Failed to load products:', error)
       }
     }
 
     async handleInputData() {
-      // Clear any existing content
       this.container.innerHTML = `
           <style>
           #products {
