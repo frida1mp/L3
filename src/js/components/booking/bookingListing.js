@@ -51,6 +51,7 @@ customElements.define('booking-listing',
     #findBookingsButton
     #bookingsCollection = []
     #allBookings = []
+
     constructor() {
       super()
       
@@ -58,7 +59,7 @@ customElements.define('booking-listing',
       this.#initializeElements()
     }
     connectedCallback() {
-      this.#findBookingsButton.addEventListener('click', this.handleInputData.bind(this))
+      this.#findBookingsButton.addEventListener('click', this.#handleInputData.bind(this))
     }
 
     #attachTemplate() {
@@ -83,13 +84,13 @@ customElements.define('booking-listing',
             this.#bookingsCollection.push(booking)
           }
         }
-        this.displayBookings()
+        this.#displayBookings()
       } catch (error) {
         console.error('Failed to load products:', error)
       }
     }
 
-    async handleInputData() {
+    async #handleInputData() {
       this.container.innerHTML = `
           <style>
           #products {
@@ -110,7 +111,7 @@ customElements.define('booking-listing',
       this.loadBookings()
     }
 
-    displayBookings() {
+    #displayBookings() {
       this.#bookingsCollection.forEach(booking => {
         const bookingDiv = document.createElement('div')
         bookingDiv.classList.add('booking')
@@ -126,15 +127,6 @@ customElements.define('booking-listing',
         `
         this.container.appendChild(bookingDiv)
       })
-    }
-
-
-    toggleStepVisibility() {
-      const customerData = this.shadowRoot.querySelector('#customerDetails')
-      const productSelection = this.shadowRoot.querySelector('#productSelection')
-
-      customerData.classList.toggle('hidden')
-      productSelection.classList.toggle('hidden')
     }
 
   })

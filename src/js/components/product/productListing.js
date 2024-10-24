@@ -35,21 +35,21 @@ class ProductListing extends HTMLElement {
     this.container = document.createElement('div')
     this.shadowRoot.appendChild(this.container)
 
-    this.loadProducts()
+    this.#loadProducts()
   }
 
-  async loadProducts() {
+  async #loadProducts() {
     try {
       const response = await fetch('products.json')
       const cars = await response.json()
 
-      this.displayProducts(cars)
+      this.#displayProducts(cars)
     } catch (error) {
       console.error('Failed to load products:', error)
     }
   }
 
-  displayProducts(cars) {
+  #displayProducts(cars) {
     this.container.innerHTML = `
         <style>
         #products {

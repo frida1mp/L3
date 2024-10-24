@@ -8,8 +8,6 @@
 import '../booking-form/index.js'
 import '../product/index.js'
 import '../booking/bookingListing.js'
-import { BookingManager } from 'booking-manager-module'
-import { LocalStorageAdapter } from '../../modules/localStorageAdapter.js'
 
 // Define template.
 const template = document.createElement('template')
@@ -91,11 +89,8 @@ customElements.define('car-application',
 
     constructor() {
       super()
-
-      this.#initializeBookingManager()
       this.#attachTemplate()
       this.#initializeElements()
-      this.#fetchProducts()
 
 
       this.#bookingForm.setProducts(this.#products)
@@ -103,6 +98,7 @@ customElements.define('car-application',
 
     connectedCallback() {
       this.#setupEventListeners()
+
     }
 
     #setupEventListeners() {
@@ -111,15 +107,15 @@ customElements.define('car-application',
     }
 
     #showBookingForm() {
+      console.log('?', this._products)
       this.#toggleVisibility(this.#createBookingButton, false)
       this.#toggleVisibility(this.#bookingForm, true)
       this.#toggleVisibility(this.#productList, false)
       this.#toggleVisibility(this.#viewBookingButton, false)
     }
 
-    #initializeBookingManager() {
-      const storage = new LocalStorageAdapter()
-      this.#bookingManager = new BookingManager(storage)
+    initializeBookingManager(bookingManager) {
+      this.#bookingManager = bookingManager
     }
 
     #attachTemplate() {
@@ -160,7 +156,6 @@ customElements.define('car-application',
     #createBookingForm() {
       const bookingForm = this.#createElement('booking-form')
       bookingForm.setProducts(this.#products)
-      bookingForm.addEventListener('bookingRequestAdded', this.#handleBookingAdded.bind(this))
       return bookingForm
     }
 
@@ -168,14 +163,12 @@ customElements.define('car-application',
       element.style.display = shouldShow ? 'block' : 'none'
     }
 
-
-    async #fetchProducts() {
+    // Gets products from app
+    async renderProducts(products) {
       try {
-        const response = await fetch('products.json')
-        this.fetchedProducts = await response.json()
-        console.log('feteched', this.#bookingManager)
+        console.log('feteched in render', products)
 
-        for (const product of this.fetchedProducts) {
+        for (const product of products) {
           const newProduct = await this.#bookingManager.addProduct(product)
           this.#products.push(newProduct)
         }
@@ -186,34 +179,38 @@ customElements.define('car-application',
       }
     }
 
-    async #handleBookingAdded(event) {
-      const { customer, selectedProduct, selectedDate } = event.detail;
-
-      const newCustomer = await this.#saveCustomer(customer)
-
-      const newBooking = await this.#saveBooking({
-        customerId: newCustomer.id,
-        productId: selectedProduct.id,
-        selectedDate
-      })
-
-      this.#bookings.push(newBooking)
-
-      // Perform any additional actions you want here, e.g., showing a message
-      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+    handleBookingSaved(booking) {
+      console.log('car-app, handleBookingSaved')
       this.#showElements([this.#viewBookingButton, this.#createBookingButton, this.#productList])
       this.#hideElements([this.#bookingForm])
     }
+    //   const { customer, selectedProduct, selectedDate } = event.detail;
 
-    async #saveBooking(bookingData) {
-      console.log('all', bookingData.productId)
-      const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
-      return newBooking
-    }
+    //   const newCustomer = await this.#saveCustomer(customer)
 
-    async #saveCustomer(customer) {
-      const newCustomer = await this.#bookingManager.addCustomer(customer)
-      return newCustomer
-    }
+    //   const newBooking = await this.#saveBooking({
+    //     customerId: newCustomer.id,
+    //     productId: selectedProduct.id,
+    //     selectedDate
+    //   })
+
+    //   this.#bookings.push(newBooking)
+
+    //   // Perform any additional actions you want here, e.g., showing a message
+    //   alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+    //   this.#showElements([this.#viewBookingButton, this.#createBookingButton, this.#productList])
+    //   this.#hideElements([this.#bookingForm])
+    // }
+
+    // async #saveBooking(bookingData) {
+    //   console.log('all', bookingData.productId)
+    //   const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
+    //   return newBooking
+    // }
+
+    // async #saveCustomer(customer) {
+    //   const newCustomer = await this.#bookingManager.addCustomer(customer)
+    //   return newCustomer
+    // }
 
   })

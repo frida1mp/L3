@@ -1,0 +1,89 @@
+import { BookingManager } from "booking-manager-module";
+import { LocalStorageAdapter } from "./localStorageAdapter";
+import '../components/car-application/carApplication.js'
+import '../components/booking-form/bookingForm.js'
+
+export class App {
+    #products = []
+    #bookingManager
+    #bookings = []
+
+    constructor() {
+        const localStorageAdapter = new LocalStorageAdapter()
+        this.#bookingManager = new BookingManager(localStorageAdapter)
+
+
+        this.carApp = document.createElement('car-application');
+        document.body.appendChild(this.carApp)
+
+        this.carApp.initializeBookingManager(this.#bookingManager)
+
+        this.fetchProducts()
+
+        const carAppRoot = this.carApp.shadowRoot
+        this.bookingForm = carAppRoot.querySelector('booking-form')
+
+        console.log('car and boking', this.bookingForm)
+
+
+        this.bookingForm.addEventListener('bookingRequestAdded', this.handleBookingAdded.bind(this))
+
+    }
+
+
+    async fetchProducts() {
+        try {
+            const response = await fetch('products.json')
+            this.fetchedProducts = await response.json()
+            console.log('feteched', this.#bookingManager)
+
+            for (const product of this.fetchedProducts) {
+                const newProduct = await this.#bookingManager.addProduct(product)
+                this.#products.push(newProduct)
+            }
+            console.log('all prods', this.#products)
+            this.carApp.renderProducts(this.#products)
+
+        } catch (error) {
+            console.error('Failed to fetch products:', error)
+        }
+    }
+
+    async handleBookingAdded(event) {
+        console.log('inside handle Booking added', event.detail)
+    const { customer, selectedProduct, selectedDate } = event.detail;
+
+      const newCustomer = await this.#saveCustomer(customer)
+
+      const newBooking = await this.#saveBooking({
+        customerId: newCustomer.id,
+        productId: selectedProduct.id,
+        selectedDate
+      })
+
+      this.#bookings.push(newBooking)
+      this.carApp.handleBookingSaved(newBooking)
+
+      // Perform any additional actions you want here, e.g., showing a message
+      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+
+      
+      
+    }
+
+    async #saveBooking(bookingData) {
+      console.log('all', bookingData.productId)
+      const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
+      return newBooking
+    }
+
+    async #saveCustomer(customer) {
+      const newCustomer = await this.#bookingManager.addCustomer(customer)
+      return newCustomer
+    }
+
+
+
+}
+
+const app = new App();

@@ -5,5 +5,4 @@
  * @version 1.1.0
  */
 
-import './components/booking-form/index.js'
-import './components/car-application/index.js'
+import './modules/app.js'
