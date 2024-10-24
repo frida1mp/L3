@@ -53,7 +53,6 @@ class ProductList extends HTMLElement {
     this.container.innerHTML = `
         <style>
         #products {
-        text-align: left;
         }
         </style>
         <h2 >Available cars</h2>
@@ -64,7 +63,7 @@ class ProductList extends HTMLElement {
 
       productDiv.innerHTML = `
       <div id="products">
-          <img src="${car.image}" alt="${car.name}">
+          <img src="${car.image}" alt="${car.name}" width="500px">
           <div>
             <h3>${car.name}</h3>
             <p>${car.description}</p>
