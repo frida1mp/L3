@@ -32,6 +32,19 @@ export class LocalStorageAdapter extends StorageInterface {
         }
     }
 
+    getBookingById(bookingId) {
+        try {
+            const bookings = this.getAllBookings()
+            if(bookings.length > 0) {
+                const booking = bookings.find(booking => booking.id === bookingId)
+                return booking
+            }    
+            return []
+        } catch (error) {
+            console.error('Error in getAllCustomers()')
+        }
+    }
+
     /**
      * Saves a booking to the bookings collection.
      *

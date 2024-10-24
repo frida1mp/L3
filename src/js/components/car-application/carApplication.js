@@ -84,9 +84,10 @@ customElements.define('car-application',
     #createBookingButton
     #createCustomerButton
     #viewBookingButton
-    #bookings
+    #bookings = []
     #products = []
     #bookingManager
+    #bookingListing
 
     /**
      * Creates an instance of the current type.
@@ -109,23 +110,22 @@ customElements.define('car-application',
 
       this.#productList = productList
 
-      const bookings = document.createElement('booking')
-      this.shadowRoot.appendChild(bookings)
-
-      this.#bookings = bookings
-      this.#bookings.style.display = 'none'
-
       this.#createBookingButton = this.shadowRoot.querySelector('#createBookingButton')
       this.#viewBookingButton = this.shadowRoot.querySelector('#viewBookingButton')
 
       const bookingForm = document.createElement('booking-form')
       bookingForm.setProducts(this.#products)
       this.shadowRoot.appendChild(bookingForm)
-
       this.#bookingForm = bookingForm
-
       this.#bookingForm.style.display = 'none'
       this.#bookingForm.addEventListener('bookingRequestAdded', this.handleBookingAdded.bind(this));
+
+      const bookingListing = document.createElement('booking-listing')
+      this.shadowRoot.appendChild(bookingListing)
+      this.#bookingListing = bookingListing
+      this.#bookingListing.style.display = 'none'
+
+
 
 
       const customerForm = document.createElement('customer-form')
@@ -141,6 +141,8 @@ customElements.define('car-application',
       this.#createBookingButton.addEventListener('click', this.handleCreateBookingClick.bind(this))
       this.#viewBookingButton.addEventListener('click', this.handleViewBookingClick.bind(this))
     }
+
+    
 
      async fetchProducts() {
        try {
@@ -158,7 +160,6 @@ customElements.define('car-application',
         console.error('Failed to fetch products:', error)
       }
     }
-
 
     handleCreateBookingClick() {
       this.#createBookingButton.style.display = 'none'
@@ -180,12 +181,16 @@ customElements.define('car-application',
       const bookingData = {customerId, productId, selectedDate}
 
       const newBooking = await this.saveBooking(bookingData)
-      console.log('booko', newBooking)
+      console.log('booko', this.#bookings)
+
+      this.#bookings.push(newBooking)
 
       // Perform any additional actions you want here, e.g., showing a message
       alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`);
       this.#bookingForm.style.display = 'none'
       this.#productList.style.display = 'block'
+      this.#viewBookingButton.style.display = 'block'
+      this.#createBookingButton.style.display = 'block'
     }
 
     async saveBooking(bookingData) {
@@ -199,8 +204,13 @@ customElements.define('car-application',
       return newCustomer
     }
  
-    handleViewBookingClick() {
-      this.#bookings.style.display = 'block'
+    async handleViewBookingClick() {
+      this.#bookingListing.style.display = "block"
+      this.#productList.style.display = "none"
+      console.log('bookings being sent', this.#bookings)
+
+      const bookings = this.#bookings
+      this.#bookingListing.initialize(bookings)
 
     }
 

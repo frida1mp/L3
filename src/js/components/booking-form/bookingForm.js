@@ -11,7 +11,7 @@ template.innerHTML = `
   
     .container {
       font-size: 1.2em;
-      color:black;
+      color:rgb(76, 76, 76);
       padding: 1em;
       margin: 1em;
       border: 2px solid black;
@@ -29,9 +29,15 @@ template.innerHTML = `
     select {
       margin-top: 10px;
     }
-      #productDropdown {
+    label {
+      color: white;
+    }
+     #productSelection {
+     }   
+    #productDropdown {
+      margin: 2px;
       background-color: white;
-      }
+    }
   </style>
 
   <div class="container">
@@ -49,17 +55,14 @@ template.innerHTML = `
       <h3>Select a product</h3>
       <select id="productDropdown"></select>
       <button id="doneButton">Done</button>
+      <input type="date" id="bookingDate" class="inputField">
     </div>
 
-    <!-- Picker for selecting booking date -->
-      <input type="date" id="bookingDate" class="inputField">
   </div>
 `
 
 customElements.define('booking-form',
-  /**
-   * Represents a nickname-form element.
-   */
+
   class extends HTMLElement {
     #name = ''
     #email = ''
@@ -101,29 +104,7 @@ customElements.define('booking-form',
     setProducts(products) {
       this.#products = products
     }
-    // setBookingManager(manager) {
-    //   this.bookingManager = manager
-    //   // this.fetchProducts()
-
-    // }
-
-    // async fetchProducts() {
-    //   try {
-    //     const response = await fetch('products.json')
-    //     this.fetchedProducts = await response.json()
-
-    //     for (const product of this.fetchedProducts) {
-    //       const newProduct = await this.bookingManager.addProduct(product)
-    //       this.#products.push(newProduct)
-    //     }
-    //     console.log('all prods', this.#products)
-    //     this.addToProductDropdown()
-
-    //   } catch (error) {
-    //     console.error('Failed to fetch products:', error)
-    //   }
-    // }
-
+    
     addToProductDropdown() {
       console.log('inside dropdown')
       this.#productDropdown.innerHTML = ''
