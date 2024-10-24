@@ -79,11 +79,20 @@ customElements.define('booking-form',
       super()
 
       this.bookingManager = null
+      this.#attachTemplate()
+      this.#initializeElements()
+      
+    }
 
-      // Attach a shadow DOM tree to this element and
-      // append the template to the shadow root.
-      this.attachShadow({ mode: 'open' })
-        .appendChild(template.content.cloneNode(true))
+    connectedCallback() {
+      this.#setupEventListeners()
+    }
+
+    #attachTemplate() {
+      this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
+    }
+
+    #initializeElements() {
       this.#nextButton = this.shadowRoot.querySelector('#nextButton')
       this.#doneButton = this.shadowRoot.querySelector('#doneButton')
       this.#productDropdown = this.shadowRoot.querySelector('#productDropdown')
@@ -92,69 +101,66 @@ customElements.define('booking-form',
       this.#dateInput.style.display = 'none'
     }
 
-
-    /**
-     * Called after the element is inserted into the DOM.
-     */
-    connectedCallback() {
-      this.#nextButton.addEventListener('click', this.handleNextClick.bind(this))
-      this.#doneButton.addEventListener('click', () => this.handleRequestBooking())
-    }
-
-    setProducts(products) {
-      this.#products = products
-    }
-    
-    addToProductDropdown() {
-      console.log('inside dropdown')
-      this.#productDropdown.innerHTML = ''
-      console.log('testing12:', this.#products)
-      this.#products.forEach(product => {
-        console.log('product1324', product)
-        const option = document.createElement('option')
-        option.value = product.id
-        console.log('option value:', option.value)
-        option.textContent = `${product.name} - $${product.price}`
-        this.#productDropdown.appendChild(option)
-      })
-
-      // Set the initial selected product
-      this.#selectedProduct = this.#productDropdown.value
+    #setupEventListeners() {
+      this.#nextButton.addEventListener('click', this.#handleNextClick.bind(this))
+      this.#doneButton.addEventListener('click', () => this.#handleRequestBooking())
       this.#productDropdown.addEventListener('change', () => {
         this.#selectedProduct = this.#productDropdown.value
       })
     }
 
-    handleNextClick() {
-      this.addToProductDropdown()
-      this.#dateInput.style.display = 'block'
+    #hideElements(elements) {
+      elements.forEach(element => element.style.display = 'none')
+    }
+
+    #showElements(elements) {
+      elements.forEach(element => element.style.display = 'block')
+    }
+
+    setProducts(products) {
+      this.#products = products
+    }
+
+    #addToProductDropdown() {
+      this.#productDropdown.innerHTML = ''
+
+      this.#products.forEach(product => {
+        const option = document.createElement('option')
+        option.value = product.id
+        option.textContent = `${product.name} - $${product.price}`
+        this.#productDropdown.appendChild(option)
+      })
+      this.#selectedProduct = this.#productDropdown.value
+      
+    }
+
+    #handleNextClick() {
+      this.#addToProductDropdown()
       const nameValue = this.shadowRoot.querySelector('#name')
       const emailValue = this.shadowRoot.querySelector('#email')
 
-      // Validate the fields
       if (nameValue.value.trim() === '' || emailValue.value.trim() === '') {
         alert('Please enter both name and email.')
         return
       }
 
-      // Store the values
       this.#name = nameValue.value.trim()
       this.#email = emailValue.value.trim()
 
-      console.log('input:', this.#name, this.#email)
-      // Show product selection step
-      this.toggleStepVisibility()
+      this.#toggleStepVisibility()
+      this.#showElements([this.#dateInput])
+
     }
 
-    toggleStepVisibility() {
+    #toggleStepVisibility() {
       const customerData = this.shadowRoot.querySelector('#customerDetails')
       const productSelection = this.shadowRoot.querySelector('#productSelection')
 
-      customerData.classList.toggle('hidden')
-      productSelection.classList.toggle('hidden')
+      this.#hideElements([customerData])
+      this.#showElements([productSelection])
     }
 
-    async handleRequestBooking() {
+    async #handleRequestBooking() {
       try {
 
         const selectedDateValue = this.#dateInput.value
@@ -176,8 +182,8 @@ customElements.define('booking-form',
 
         const bookingRequestEvent = new CustomEvent('bookingRequestAdded', {
           detail: { customer, selectedProduct, selectedDate },
-          bubbles: true, // Allow event to bubble up through the DOM
-          composed: true // Allow event to cross the shadow DOM boundary
+          bubbles: true,
+          composed: true 
         });
 
         this.dispatchEvent(bookingRequestEvent);
@@ -186,7 +192,7 @@ customElements.define('booking-form',
         console.error('Failed to create booking:', error.message)
       }
     }
-    async viewBookingById(email) {
+    async #viewBookingById(email) {
       const bookings = this.bookingManager.getAllBookings()
       const bookingWithEmail = bookings.find(booking => booking.customer.email === email)
       const booking = bookingWithEmail
