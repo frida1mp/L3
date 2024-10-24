@@ -93,7 +93,7 @@ customElements.define('car-application',
      * Creates an instance of the current type.
      */
     constructor() {
-      super() 
+      super()
 
       const storage = new LocalStorageAdapter()
       this.#bookingManager = new BookingManager(storage)
@@ -103,7 +103,7 @@ customElements.define('car-application',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-        this.fetchProducts()
+      this.fetchProducts()
 
       const productList = document.createElement('product-listing')
       this.shadowRoot.appendChild(productList)
@@ -142,10 +142,13 @@ customElements.define('car-application',
       this.#viewBookingButton.addEventListener('click', this.handleViewBookingClick.bind(this))
     }
 
-    
+    toggleVisibility(element, shouldShow) {
+      element.style.display = shouldShow ? 'block' : 'none'
+    }
 
-     async fetchProducts() {
-       try {
+
+    async fetchProducts() {
+      try {
         const response = await fetch('products.json')
         this.fetchedProducts = await response.json()
         console.log('feteched', this.#bookingManager)
@@ -162,35 +165,34 @@ customElements.define('car-application',
     }
 
     handleCreateBookingClick() {
-      this.#createBookingButton.style.display = 'none'
-      this.#bookingForm.style.display = 'block'
-      this.#productList.style.display = 'none'
+      this.toggleVisibility(this.#createBookingButton, false)
+      this.toggleVisibility(this.#bookingForm, true)
+      this.toggleVisibility(this.#productList, false)
+      this.toggleVisibility(this.#viewBookingButton, false)
+
     }
 
     async handleBookingAdded(event) {
-      const {customer, selectedProduct, selectedDate} = event.detail;
+      const { customer, selectedProduct, selectedDate } = event.detail;
 
       const newCustomer = await this.saveCustomer(customer)
 
       const customerId = newCustomer.id
-      console.log('newProduct???:', selectedProduct)
-
 
       const productId = selectedProduct.id
 
-      const bookingData = {customerId, productId, selectedDate}
+      const bookingData = { customerId, productId, selectedDate }
 
       const newBooking = await this.saveBooking(bookingData)
-      console.log('booko', this.#bookings)
 
       this.#bookings.push(newBooking)
 
       // Perform any additional actions you want here, e.g., showing a message
-      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`);
-      this.#bookingForm.style.display = 'none'
-      this.#productList.style.display = 'block'
-      this.#viewBookingButton.style.display = 'block'
-      this.#createBookingButton.style.display = 'block'
+      alert(`Booking complete! You will recieve an email with the details of your booking. \nChosen car: ${newBooking.product.name}\nDate booked: ${newBooking.date}\nYour email: ${newBooking.customer.email}`)
+      this.toggleVisibility(this.#bookingForm, false)
+      this.toggleVisibility(this.#productList, true)
+      this.toggleVisibility(this.#viewBookingButton, true)
+      this.toggleVisibility(this.#createBookingButton, true)
     }
 
     async saveBooking(bookingData) {
@@ -203,10 +205,10 @@ customElements.define('car-application',
       const newCustomer = await this.#bookingManager.addCustomer(customer)
       return newCustomer
     }
- 
+
     async handleViewBookingClick() {
-      this.#bookingListing.style.display = "block"
-      this.#productList.style.display = "none"
+      this.toggleVisibility(this.#bookingListing, true)
+      this.toggleVisibility(this.#productList, false)
       console.log('bookings being sent', this.#bookings)
 
       const bookings = this.#bookings
