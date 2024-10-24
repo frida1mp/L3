@@ -40,7 +40,7 @@ class ProductList extends HTMLElement {
 
   async #loadProducts() {
     try {
-      const response = await fetch('/products.json')
+      const response = await fetch('products.json')
       const cars = await response.json()
 
       this.#displayProducts(cars)

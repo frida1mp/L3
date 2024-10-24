@@ -27,7 +27,7 @@ export class App {
 
   async fetchProducts() {
     try {
-      const response = await fetch('/products.json')
+      const response = await fetch('products.json')
       this.fetchedProducts = await response.json()
 
       for (const product of this.fetchedProducts) {
