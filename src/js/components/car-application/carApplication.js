@@ -111,7 +111,6 @@ customElements.define('car-application',
     }
 
     #showBookingForm() {
-      console.log('?', this._products)
       this.#toggleVisibility(this.#createBookingButton, false)
       this.#toggleVisibility(this.#bookingForm, true)
       this.#toggleVisibility(this.#productList, false)
@@ -167,14 +166,10 @@ customElements.define('car-application',
     // Gets products from app
     async renderProducts(products) {
       try {
-        console.log('feteched in render', products)
-
         for (const product of products) {
           const newProduct = await this.#bookingManager.addProduct(product)
           this.#products.push(newProduct)
         }
-        console.log('all prods', this.#products)
-
       } catch (error) {
         console.error('Failed to fetch products:', error)
       }

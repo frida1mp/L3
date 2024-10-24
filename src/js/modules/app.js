@@ -23,9 +23,6 @@ export class App {
         const carAppRoot = this.carApp.shadowRoot
         this.bookingForm = carAppRoot.querySelector('booking-form')
 
-        console.log('car and boking', this.bookingForm)
-
-
         this.bookingForm.addEventListener('bookingRequestAdded', this.#handleBookingAdded.bind(this))
 
     }
@@ -35,13 +32,11 @@ export class App {
         try {
             const response = await fetch('products.json')
             this.fetchedProducts = await response.json()
-            console.log('feteched', this.#bookingManager)
 
             for (const product of this.fetchedProducts) {
                 const newProduct = await this.#bookingManager.addProduct(product)
                 this.#products.push(newProduct)
             }
-            console.log('all prods', this.#products)
             this.carApp.renderProducts(this.#products)
 
         } catch (error) {
@@ -51,7 +46,6 @@ export class App {
 
     async #handleBookingAdded(event) {
         try {
-            console.log('inside handle Booking added', event.detail)
             const { customer, selectedProduct, selectedDate } = event.detail;
 
             const newCustomer = await this.#saveCustomer(customer)
@@ -77,7 +71,6 @@ export class App {
 
     async #saveBooking(bookingData) {
         try {
-            console.log('all', bookingData.productId)
             const newBooking = await this.#bookingManager.addBooking(bookingData.productId, bookingData.customerId, bookingData.selectedDate)
             return newBooking
         } catch (error) {

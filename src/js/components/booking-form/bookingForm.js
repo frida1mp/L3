@@ -169,7 +169,6 @@ customElements.define('booking-form',
           return
         }
 
-        console.log('inside submit book')
         const customer = {
           name: this.#name,
           email: this.#email
@@ -196,7 +195,6 @@ customElements.define('booking-form',
       const bookings = this.bookingManager.getAllBookings()
       const bookingWithEmail = bookings.find(booking => booking.customer.email === email)
       const booking = bookingWithEmail
-      console.log('fetched?', booking)
     }
 
 

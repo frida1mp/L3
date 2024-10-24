@@ -22,7 +22,6 @@ export class LocalStorageAdapter extends StorageInterface {
     getAllBookings() {
         try {
             const bookings = localStorage.getItem(this.bookings)
-            console.log()
             if (Array.isArray(bookings)) {
                 return JSON.stringify(bookings)
             }
@@ -60,10 +59,8 @@ export class LocalStorageAdapter extends StorageInterface {
      * @param {object} booking - the new booking.
      */
     saveCustomer(customer) {
-        console.log('inside save c')
         try {
             localStorage.setItem(this.customers, JSON.stringify(this.customers))
-            console.log('Customer saved to localStorage:', customer)
         } catch (error) {
             console.error('error in saveProduct()')
         }
@@ -72,7 +69,6 @@ export class LocalStorageAdapter extends StorageInterface {
     getAllCustomers() {
         try {
             const customers = localStorage.getItem(this.customers)
-            console.log()
             if (Array.isArray(customers)) {
                 return JSON.stringify(customers)
             }
@@ -91,7 +87,6 @@ export class LocalStorageAdapter extends StorageInterface {
     getAllProducts() {
         try {
             const products = localStorage.getItem(this.products)
-            console.log('productS?', products)
             if (Array.isArray(products)) {
                 return JSON.stringify(products)
             }
@@ -107,10 +102,8 @@ export class LocalStorageAdapter extends StorageInterface {
      * @param {object} product - new product
      */
     saveProduct(product) {
-        console.log('inside saveProd', JSON.stringify(product))
         try {
             localStorage.setItem(this.products, JSON.stringify(this.product))
-            console.log('Product saved to localStorage:', product)
         } catch (error) {
             console.error('error in saveProduct()')
         }
