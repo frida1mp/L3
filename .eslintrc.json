@@ -1,0 +1,46 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "standard"
+  ],
+  "rules": {
+    "max-len": [
+      "error",
+      {
+        "code": 110
+      }
+    ],
+    "space-before-function-paren": [
+      "error",
+      "never"
+    ],
+    "no-return-assign": [
+      "error"
+    ],
+    "no-return-await": [
+      "error"
+    ],
+    "complexity": [
+      "error",
+      {
+        "max": 10
+      }
+    ],
+    "prefer-const": "error",
+    "consistent-return": "error",
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 0
+      }
+    ],
+    "newline-before-return": "error",
+    "no-useless-constructor": "error"
+  }
+}
