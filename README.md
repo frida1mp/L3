@@ -41,8 +41,6 @@ npm run lint
 
 See issues in repository. 
 
-### Design
-![class diagram](./images/umlClass.jpeg)
 ### CI/CD Flow
 #### Linting: Code is linted on every push using ESLint.
 
@@ -64,13 +62,9 @@ Run the test using: npm test
 
 - Location: Create your test files in the __tests__ directory or in the same directory as the module you are testing, using the naming convention *.test.js.
 
-- Structure: Each test file should import the module to be tested and Jest's testing functions. Here's an example of a basic test structure:
-
-![Getting Started](./images/scrnsht2.png)
+- Structure: Each test file should import the module to be tested and Jest's testing functions. 
 
 - Mocking Dependencies: In your tests, you may need to mock dependencies to isolate the code being tested. Jest provides a powerful mocking system to simulate the behavior of modules and functions. Use jest.fn() to create mock functions and control their return values.
-
-#### Docker Build: A Docker image is built automatically and tested in a containerized environment.
 
 #### Deployment: 
 The application is deployed through Netlify
