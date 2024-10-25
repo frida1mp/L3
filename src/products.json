@@ -4,20 +4,20 @@
       "name": "Audi",
       "description": "Black.",
       "price": 500,
-      "image": "./js/images/car.jpg"
+      "image": "./src/js/images/car.jpg"
     },
     {
       "id": 2,
       "name": "Volvo",
-      "description": "green",
+      "description": "grey",
       "price": 700,
-      "image": "./js/images/car.jpg"
+      "image": "car.jpg"
     },
     {
       "id": 3,
       "name": "Land Rover",
       "description": "yellow",
       "price": 900,
-      "image": "./js/images/car.jpg"
+      "image": "car.jpg"    
     }
   ]

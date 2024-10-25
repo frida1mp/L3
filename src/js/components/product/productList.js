@@ -60,6 +60,7 @@ class ProductList extends HTMLElement {
     cars.forEach(car => {
       const productDiv = document.createElement('div')
       productDiv.classList.add('product')
+      console.log('img', car.image)
 
       productDiv.innerHTML = `
       <div id="products">
